@@ -11,11 +11,12 @@ struct node {
 
 struct list {
 	node* head;
-
+	node* tail;
 };
 
 void InitLinked_List(list& l) {
 	l.head = nullptr;
+	l.tail = nullptr;
 }
 
 node* getNode(int x) {
@@ -23,12 +24,12 @@ node* getNode(int x) {
 	if (p == nullptr) return nullptr;
 	p->data = x;
 	p->next = nullptr;
-	
+
 	return p;
 }
 
 void Add_Head(list& l, int x) {
-	
+
 	node* p = getNode(x);
 	if (l.head == nullptr) {
 		l.head = p;
@@ -42,6 +43,20 @@ void Add_Head(list& l, int x) {
 	}
 }
 
+void Add_Tail(list& l, int x) {
+
+	node* p = getNode(x);
+	if (l.head == nullptr) {
+		l.head = l.tail = p;
+	}
+	else {
+		l.tail->next = p;
+		l.tail = p;
+	}
+}
+
+
+
 void PrintList(list& l) {
 	if (l.head == nullptr) return;
 	node* cur = l.head;
@@ -53,7 +68,7 @@ void PrintList(list& l) {
 }
 
 void InPut(ifstream& fin, list& l) {
-	
+
 	while (true) {
 		int x;
 		fin >> x;
@@ -68,7 +83,7 @@ occurrences of x out of the list.Otherwise, do not thing.Save the list to anothe
 Input:
 1 2 2 4 2 6 0
 User enter 2
-Ouput : 
+Ouput :
 1 4 6 0
 */
 
@@ -76,12 +91,12 @@ void RemoveALL(list& l, int x)
 {
 	if (l.head == nullptr) return;
 
-	while (l.head != nullptr && l.head->data == x ) {
+	while (l.head != nullptr && l.head->data == x) {
 		node* temp = l.head;
 		l.head = l.head->next;
 		delete temp;
 	}
-	node *cur = l.head;
+	node* cur = l.head;
 	while (cur->next) {
 		if (cur->next->data == x) {
 			node* temp = cur->next;
@@ -119,7 +134,7 @@ void RemoveDuplicate(list& l) {
 			}
 		}
 	}
-	
+
 }
 
 void Sorted_LinkedList(list& l) {
@@ -134,12 +149,12 @@ void Sorted_LinkedList(list& l) {
 	}
 }
 
-void RemoveDuplicate_AfterSorted(list &l){
-	
+void RemoveDuplicate_AfterSorted(list& l) {
+
 
 	//Time complexity is O(N); 
 	if (l.head == nullptr) return;
-	
+
 	node* cur = l.head;
 	while (cur->next) {
 		if (cur->data == cur->next->data) {
@@ -193,7 +208,7 @@ void InsertEvenNumber(list& l) {
 	// Add Mid
 	node* cur = l.head->next;
 	node* prev = l.head;
-	while (cur->next) {	
+	while (cur->next) {
 		prev = cur;
 		cur = cur->next;
 
@@ -215,7 +230,7 @@ void InsertEvenNumber_KAISEN(list& l) {
 	l.head = add; even += 2;
 	node* cur = l.head->next;
 	while (cur->next) {
-		
+
 		node* NEXT = cur->next;
 		node* p = getNode(even); even += 2;
 		cur->next = p;
@@ -224,6 +239,216 @@ void InsertEvenNumber_KAISEN(list& l) {
 
 	}
 
+}
+
+/*Sorted list
+Given a linked list of integers sorted from smallest to largest (head to end). Insert a new integer into the
+linked list so that it remains sorted.
+Input:
+27
+10 20 30 40 50 60 0
+Output:
+10 20 27 30 40 50 60 0*/
+
+
+void Sorted_LinkedList(list& l, int x) {
+	if (l.head == nullptr) return;
+
+	if (l.head->data > x) {
+
+		node* temp = getNode(x);
+		temp->next = l.head;
+		l.head = temp;
+	}
+	else {
+
+		bool flag = false;
+		//cout << "1" << endl;
+		node* cur = l.head->next;
+		node* prev = l.head;
+		node* tmp = getNode(x);
+		while (cur) {
+
+			if (cur->data > x) {
+
+				prev->next = tmp;
+				tmp->next = cur;
+				flag = true;
+				break;
+			}
+			else {
+				prev = cur;
+				cur = cur->next;
+			}
+		}
+		if (flag == false) {
+			node* Move = l.head;
+			while (Move->next) {
+				Move = Move->next;
+			}
+			Move->next = tmp;
+		}
+	}
+
+}
+
+list ListofSum(list& l) {
+
+
+	if (l.head == nullptr) return l;
+	list k;
+	InitLinked_List(k);
+
+
+	// Fibonacci sequence
+	/*node* prev = l.head;
+	node* cur = l.head->next;
+	Add_Head(k, prev->data);
+	while (cur) {
+		Add_Head(k, prev->data + cur->data);
+		prev = cur;
+		cur = cur->next;
+	}
+	return k;*/
+
+	int y = 0;
+
+	node* cur = l.head;
+	while (cur) {
+		int res = cur->data + y;
+		Add_Head(k, res);
+		y = res;
+		cur = cur->next;
+	}
+
+	return k;
+}
+/*
+Given a linked list, re-arrange its nodes into two lists: <1st node, 3rd node, 5th node...> and <2nd node,
+4th node, 6th node...>. Do not allocate any new nodes.
+Input:
+10 20 30 40 50 0
+Output:
+10 30 50 0
+20 40 0
+*/
+
+void SplitLinkedList(list& l) {
+
+	list odd, even;
+	InitLinked_List(odd);
+	InitLinked_List(even);
+	int i = 1;
+	while (l.head) {
+		if (i % 2 == 1) {
+			Add_Head(odd, l.head->data);
+			l.head = l.head->next;
+			++i;
+		}
+		else {
+			Add_Head(even, l.head->data);
+			l.head = l.head->next;
+			i++;
+		}
+	}
+	PrintList(odd); cout << endl;
+	PrintList(even); cout << endl;
+
+}
+
+/*
+3.8 2 lists ->. 1 list
+Given two linked lists, combine their nodes so that the nodes of the new list alternate between those of
+the two original nodes: <1st node of 1st list, 1st node of 2nd list, 2nd node of 1st list, 2nd node of 2nd list...>.
+Do not allocate any new nodes.
+Input:
+10 30 50 70 90 110 0
+20 40 60 0
+Output:
+10 20 30 40 50 60 70 90 110 0*/
+
+void Input(ifstream& fin, list& l, list& k) {
+
+	InitLinked_List(l);
+	InitLinked_List(k);
+	bool flag = false;
+	while (fin.good()) {
+		int x;
+		fin >> x;
+		if (x == 0) flag = true;
+		if (flag == false && x != 0) Add_Head(l, x);
+		if (flag == true && x != 0) Add_Head(k, x);
+
+	}
+}
+
+void Input_Tail(ifstream& fin, list& l, list& k) {
+
+	InitLinked_List(l);
+	InitLinked_List(k);
+	bool flag = false;
+	while (fin.good()) {
+		int x;
+		fin >> x;
+		if (x == 0) flag = true;
+		if (flag == false && x != 0) Add_Tail(l, x);
+		if (flag == true && x != 0) Add_Tail(k, x);
+	}
+}
+
+
+int Count(list& l) {
+	int cnt = 0;
+	node* p = l.head;
+	while (p) {
+		cnt++;
+		p = p->next;
+	}
+
+	return cnt;
+}
+
+list MergeList(list& l, list& k) {
+
+	list Merge;
+	InitLinked_List(Merge);
+	int n = Count(l);
+	int m = Count(k);
+
+	int j = 0, i = 0;
+	while (i < n && j < m && l.head && k.head) {
+		Add_Head(Merge, l.head->data);
+		Add_Head(Merge, k.head->data);
+		i++; j++; l.head = l.head->next; k.head = k.head->next;
+	}
+	while (i < n && l.head) {
+		Add_Head(Merge, l.head->data);
+		++i; l.head = l.head->next;
+	}
+	while (j < n && k.head) {
+		Add_Head(Merge, k.head->data);
+		++j; k.head = k.head->next;
+	}
+
+	return Merge;
+}
+
+
+
+void CatTwoList(list& l, list& k) {
+	if (l.head == nullptr) return;
+	l.tail->next = k.head;
+}
+
+int ListToNumber(list& l) {
+	if (l.head == nullptr) return 0;
+	int res = l.head->data;
+	node* p = l.head;
+	while (p->next) {
+		res = res * 10 + p->next->data;
+		p = p->next;
+	}
+	return res;
 }
 
 int main(void) {
@@ -237,9 +462,9 @@ int main(void) {
 		list l;
 		InitLinked_List(l);
 		InPut(fin, l);
-	
+
 		/* write function to solve problems right here. (Question 1.) */
-		
+
 	//	RemoveALL(l, 2);
 
 		/* write function to solve problems right here.(Question 2.) */
@@ -254,11 +479,40 @@ int main(void) {
 		/* write function to solve problems right here.(Question 3.) */
 	//	Reverse_LinkedList(l);
 
-		PrintList(l); cout << endl;
+
 		/* write function to solve problems right here.(Question 4.) */
 
-		InsertEvenNumber_KAISEN(l);
-		PrintList(l);
+	//	InsertEvenNumber_KAISEN(l);
+		/* write function to solve problems right here.(Question 5.) */
+
+	//	Sorted_LinkedList(l, 27);
+
+			/* write function to solve problems right here.(Question 6.) */
+
+			/*	list k = ListofSum(l);
+		PrintList(k); cout << endl;*/
+
+		/* write function to solve problems right here.(Question 7.) */
+
+	// 	SplitLinkedList(l);
+			/* write function to solve problems right here.(Question 8.) */
+		/*list tmp, temp;
+		Input(fin, tmp, temp);
+		list buffer = MergeList(tmp, temp);
+		PrintList(buffer);*/
+
+		/* write function to solve problems right here.(Question 9.) */
+	/*	list tmp, temp;
+		Input_Tail(fin, tmp, temp);
+		CatTwoList(tmp, temp);
+		PrintList(tmp); */
+
+
+		/* write function to solve problems right here.(Question 10.) */
+		cout << ListToNumber(l);
+
+
+		//PrintList(l);
 
 	}
 
